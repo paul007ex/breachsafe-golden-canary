@@ -1,0 +1,229 @@
+# SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+# Release metadata and quality-tool configuration for Golden Canary.
+# Generated from breachsafe-repo. Keep this table aligned with the tested wheel.
+
+[project]
+name = "breachsafe-golden-canary"
+version = "0.0.1"
+description = "Canary repo: proves the golden-python scaffold and reusable CI actually run end to end."
+readme = "README.md"
+requires-python = ">=3.14"
+license = "PolyForm-Noncommercial-1.0.0"
+license-files = ["LICENSE", "LICENSES/*"]
+authors = [{ name = "BreachSAFE Golden Canary contributors" }]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    # No `License ::` trove classifiers: PEP 639 forbids pairing them with the
+    # SPDX `license` string above, and newer build backends reject the combo.
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.14",
+]
+dependencies = []
+
+[project.optional-dependencies]
+# Enterprise-grade gates from day 0. Installed via `uv pip install -e '.[dev]'`.
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "hypothesis>=6.100",         # property-based testing
+    "allure-pytest>=2.13",       # rich test reporting (viewer in the workbench image)
+    "import-linter>=2.0",        # architecture / import-boundary contracts
+    "mutmut>=3.0",               # opt-in mutation testing (see `just mutate`)
+    "ruff>=0.15,<0.17",
+    "mypy>=1.10",
+    "bandit>=1.7",
+    "pip-audit>=2.7",
+    "reuse>=4.0",
+    # Tuned MAX code-quality gate (`just quality`). jscpd is Node-based (run via
+    # npx / the container), so it is intentionally not a Python dependency here.
+    "xenon>=0.9",           # cyclomatic-complexity ceiling (wraps radon)
+    "radon>=6.0",           # complexity/maintainability metrics (xenon backend)
+    "refurb>=2.0",          # Python modernization lints (blocking)
+    "vulture>=2.11",        # dead-code detection (see .vulture-allowlist.py)
+    "interrogate>=1.7",     # docstring-coverage (advisory)
+    "diff-cover>=9.0",      # 100% coverage on changed lines
+    "pylint>=3.2",          # duplicate-code check (R0801)
+]
+# Coverage-guided fuzzing of untrusted-input parsers. Fuzz-only and optional:
+# atheris ships amd64-Linux wheels ONLY, so it is never in the `dev` extra or
+# the release gate. atheris>=3.1 is required for a cp314 wheel (3.0.0 has none).
+fuzz = [
+    "atheris>=3.1",
+]
+
+[project.scripts]
+breachsafe-golden-canary = "golden_canary.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/paul007ex/breachsafe-golden-canary"
+Repository = "https://github.com/paul007ex/breachsafe-golden-canary"
+Issues = "https://github.com/paul007ex/breachsafe-golden-canary/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/golden_canary"]
+
+# ============================================================================
+# ruff
+# ============================================================================
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+src = ["src", "tests"]
+# The vulture allow-list uses bare-name references (vulture's whitelist format);
+# they are not real code, so keep them out of ruff's undefined-name checks.
+extend-exclude = [".vulture-allowlist.py"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
+    "UP",   # pyupgrade
+    "N",    # pep8-naming
+    "S",    # flake8-bandit (security)
+    "SIM",  # flake8-simplify
+    "TC",   # flake8-type-checking
+    "RUF",  # ruff-specific
+    "PL",   # pylint
+    "PT",   # pytest style
+    "RET",  # flake8-return
+    "ARG",  # flake8-unused-arguments
+    "DTZ",  # flake8-datetimez (timezone-aware datetime)
+    "PTH",  # flake8-use-pathlib
+    "ERA",  # eradicate (no commented-out code)
+    "INP",  # implicit namespace package
+    "BLE",  # flake8-blind-except
+    "SLF",  # flake8-self (private-member access)
+    "D",    # pydocstyle — Google docstring convention
+]
+ignore = [
+    "E501",  # line-too-long, handled by the formatter
+    # TC002/TC003 tell you to move imports into an `if TYPE_CHECKING:` block.
+    # That breaks pydantic, which is the BQP house style: pydantic resolves
+    # field annotations at runtime, so a type-only import used in a model field
+    # raises PydanticUserError("... is not fully defined") at first
+    # instantiation. Reproduced on pydantic 2.13 / py3.14; see
+    # docs/decisions/2026-08-23-ruff-ignore-tc002-tc003.md. The rules cannot
+    # tell a pydantic field annotation from an inert one, so a repo following
+    # them ships a latent runtime failure to pass a lint gate.
+    "TC002",  # move third-party import into type-checking block
+    "TC003",  # move stdlib import into type-checking block
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.pylint]
+# Functions <= 30 lines norm, 50 ceiling (statements is a close proxy).
+max-statements = 50
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = [
+    "S101",     # asserts allowed in tests
+    "PLR2004",  # magic numbers allowed in tests
+    "ARG",      # unused args allowed in fixtures
+    "D",        # test names document intent; no public-API surface
+    "INP001",   # tests/ is intentionally not an importable package
+]
+
+# ============================================================================
+# mypy
+# ============================================================================
+[tool.mypy]
+python_version = "3.14"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+no_implicit_reexport = true
+disallow_any_generics = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+no_implicit_optional = true
+strict_equality = true
+extra_checks = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+
+# ============================================================================
+# pytest + coverage
+# ============================================================================
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=golden_canary",
+    "--cov-report=term-missing",
+    "--cov-fail-under=90",
+    # Allure results emitted on EVERY run (view with `allure serve .allure-results`;
+    # the allure CLI ships in the breachsafe-container/workbench image). allure-pytest
+    # is a dev dep, so this is always available where tests run.
+    "--alluredir=.allure-results",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["golden_canary"]
+omit = ["tests/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+]
+fail_under = 90
+show_missing = true
+
+# ============================================================================
+# bandit
+# ============================================================================
+[tool.bandit]
+exclude_dirs = ["tests"]
+
+# ============================================================================
+# import-linter (architecture / import-boundary gate) — `just arch`
+# ============================================================================
+# Enforces the intended dependency direction so the package cannot rot into a
+# tangle as it grows. This starter contract PASSES for the minimal scaffold
+# (only `__main__` exists; the lower layers are optional until you add them).
+#
+# To extend as the package grows:
+#   * Drop the parentheses to make a layer REQUIRED once it exists, e.g. add a
+#     `golden_canary.core` module then change "(golden_canary.core)" to
+#     "golden_canary.core". Higher layers may import lower ones; a lower
+#     layer importing a higher one then fails the gate.
+#   * For sibling packages that must NOT know about each other, add a second
+#     contract of `type = "independence"`, e.g.:
+#       [[tool.importlinter.contracts]]
+#       name = "Adapters are independent"
+#       type = "independence"
+#       modules = ["golden_canary.adapters.tls", "golden_canary.adapters.ssh"]
+[tool.importlinter]
+root_package = "golden_canary"
+
+[[tool.importlinter.contracts]]
+name = "Golden Canary layered architecture"
+type = "layers"
+# Top-to-bottom: higher layers may import lower, never the reverse. Layers in
+# parentheses are optional — absent modules are skipped, not errors — so this
+# contract is satisfied by the minimal scaffold and tightens as you add layers.
+layers = [
+    "golden_canary.__main__",
+    "(golden_canary.cli)",
+    "(golden_canary.core)",
+]

@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+# Default skill set for a python-cli repo. Installed from
+# paul007ex/breachsafe-common/skills via `just skills-sync`. Drift is checked in CI.
+repo: breachsafe-golden-canary
+archetype: python-cli
+source: https://github.com/paul007ex/breachsafe-common/tree/main/skills
+skills:
+  - breachsafe-architecture-review
+  - breachsafe-implement
+  - breachsafe-quality-review
+  - breachsafe-pqc-pm
+  - breachsafe-security-audit
+  - breachsafe-release
+  - breachsafe-cicd-hygiene
+  - breachsafe-container-hygiene
+  - breachsafe-test-architect
+  - breachsafe-error-handling
+  - breachsafe-docs

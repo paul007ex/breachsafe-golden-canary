@@ -1,0 +1,16 @@
+# Changes here will be overwritten by `copier update`. Do not edit by hand.
+# This file records the template version so `copier update` can re-apply drift.
+_src_path: /tmp/canary-src/scaffold
+container_tag: 3.14-openssl3.5.7
+coverage_min: 90
+description: 'Canary repo: proves the golden-python scaffold and reusable CI actually
+    run end to end.'
+github_owner: paul007ex
+golden_ref: v1
+license: PolyForm-Noncommercial-1.0.0
+module_name: golden_canary
+project_name: Golden Canary
+project_slug: breachsafe-golden-canary
+project_type: python-cli
+python_version: '3.14'
+
