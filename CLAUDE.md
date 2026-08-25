@@ -135,7 +135,7 @@ CI (`.github/workflows/ci.yml`) is a thin, **verbatim** (never Jinja-templated) 
 `load-config` job reads `.github/bqp.env` and passes `module` / `coverage_min` / `container_tag`
 into the reusable quality-gate workflow
 `paul007ex/breachsafe-golden-python/.github/workflows/quality-gates-python.yml@v1`,
-which runs inside `ghcr.io/paul007ex/breachsafe-container:3.14-openssl3.5.7`. A fix to
+which runs inside `ghcr.io/paul007ex/breachsafe-container:latest`. A fix to
 the gate logic lands once in breachsafe-golden-python and every repo inherits it on the next run.
 Release is `.github/workflows/release.yml` (reusable `release-python.yml` — fail-closed gate, OIDC
 publish, cosign, SLSA attestation).
