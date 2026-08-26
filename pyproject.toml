@@ -4,7 +4,7 @@
 
 [project]
 name = "breachsafe-golden-canary"
-version = "0.0.2"
+version = "0.0.3"
 description = "Canary repo: proves the golden-python scaffold and reusable CI actually run end to end."
 readme = "README.md"
 requires-python = ">=3.14"
