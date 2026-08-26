@@ -4,7 +4,7 @@
 
 [project]
 name = "breachsafe-golden-canary"
-version = "0.0.1"
+version = "0.0.2"
 description = "Canary repo: proves the golden-python scaffold and reusable CI actually run end to end."
 readme = "README.md"
 requires-python = ">=3.14"
@@ -60,7 +60,7 @@ Repository = "https://github.com/paul007ex/breachsafe-golden-canary"
 Issues = "https://github.com/paul007ex/breachsafe-golden-canary/issues"
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling<1.28"]  # <1.28 emits Metadata-Version 2.4 (twine 6.2 rejects 2.5); unpin when twine/packaging accept 2.5
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
