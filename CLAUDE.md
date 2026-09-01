@@ -27,7 +27,7 @@ If you cannot answer those from having read the files, you have not read them.
 |---|---|---|
 | 1 | **This entire file** | The invariants below are inherited and not open to relitigation |
 | 2 | `~/claude/CLAUDE.md` (platform, auto-loads) | Cross-repo policy: licensing, OpenSSL 3.5 LTS baseline, canonical remotes. Where it conflicts with this file, **this file wins for this repo** and the conflict is named here |
-| 3 | `breachsafe-common/skills/skills/breachsafe-implement/references/remediation-procedure.md` | The 8-step issue-to-main procedure and the evidence each step owes. Report `N/8`. Do not invent your own workflow |
+| 3 | `breachsafe-common/skills/skills/breachsafe-implement/references/remediation-procedure.md` | The issue-to-main procedure and the evidence each step owes, run as the platform ten-step loop (`~/claude/CLAUDE.md` §1). Report `N/10`. Do not invent your own workflow |
 | 4 | `.github/PULL_REQUEST_TEMPLATE.md` | What evidence a PR must carry. Filling it in afterwards from memory is how unreported red gates happen |
 | 5 | `justfile` | The **actual** gate commands. Do not guess them, and do not run a subset and call it "the gates" |
 | 6 | `docs/decisions/` (if present) | Accepted decisions. Re-opening one without reading it wastes a review cycle |
